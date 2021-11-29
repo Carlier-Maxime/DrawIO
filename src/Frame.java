@@ -10,5 +10,6 @@ public class Frame extends JFrame {
         getContentPane().setBackground(Color.BLACK);
         add(new View());
         setVisible(true);
+        getContentPane().getComponent(0).requestFocus();
     }
 }
