@@ -20,6 +20,7 @@ public class Controller implements KeyListener, MouseMotionListener {
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_D) {draw = !draw; view.resetLastPoint();}
         if (e.getKeyCode() == KeyEvent.VK_R) view.resetDraw();
+        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_Z) view.crtlZ();
     }
 
     @Override
