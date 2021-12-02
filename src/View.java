@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class View extends JPanel {
     private Controller controller;
     private ArrayList<Point> pointsToPaint;
-    private Point[] history;
+    private MyPoint[] history;
     private boolean newRoute;
     private ArrayList<Color> colors;
     private Color color;
@@ -20,12 +20,12 @@ public class View extends JPanel {
     private static final int sizeHistory = 1000;
     private int effect;
     private final int nbEffect = 1;
-    private boolean crtlZ;
+    private boolean ctrlZ;
 
     public View() {
         controller = new Controller(this);
         pointsToPaint = new ArrayList<>();
-        history = new Point[sizeHistory];
+        history = new MyPoint[sizeHistory];
         colors = new ArrayList<>(Arrays.asList(
                 new Color(255, 0,0),
                 new Color(255, 119,0),
@@ -44,7 +44,7 @@ public class View extends JPanel {
         reset = false;
         newRoute = true;
         effect = 0;
-        crtlZ = false;
+        ctrlZ = false;
 
         addKeyListener(controller);
         addMouseMotionListener(controller);
@@ -72,23 +72,24 @@ public class View extends JPanel {
                 g.setColor(color);
                 if (getLastPoint()==null || newRoute) {g.drawOval((int) point.getX(), (int) point.getY(), 1, 1); newRoute = false;}
                 else g.drawLine(getLastPoint().x, getLastPoint().y, point.x, point.y);
-                applyEffect(g, point);
+                applyEffect(g, new MyPoint(point.x, point.y, effect, color));
                 setLastPoint(point);
                 incrementColor();
             }
             pointsToPaint = new ArrayList<>();
         }
-        if (crtlZ) {
+        if (ctrlZ) {
             g.setColor(Color.BLACK);
-            Point point = getLastPoint();
+            MyPoint point = getLastPoint();
             if (point==null) return;
             removeLastPoint();
             g.drawOval(point.x, point.y, 1, 1);
             if (getLastPoint()!=null) {
                 g.drawLine(getLastPoint().x, getLastPoint().y, point.x, point.y);
             }
+            applyEffect(g, point);
             newRoute = true;
-            crtlZ = false;
+            ctrlZ = false;
         }
     }
 
@@ -96,19 +97,19 @@ public class View extends JPanel {
         boolean noSet = true;
         for (int i=0; i<history.length; i++){
             if (history[i]==null){
-                history[i] = point;
+                history[i] = new MyPoint(point.x, point.y, effect, color);
                 noSet = false;
             }
         }
         if (noSet){
             if (history.length - 1 >= 0) System.arraycopy(history, 1, history, 0, history.length - 1);
-            history[history.length-1] = point;
+            history[history.length-1] = new MyPoint(point.x, point.y, effect, color);
         }
     }
 
-    private Point getLastPoint(){
-        Point point = null;
-        for (Point p : history){
+    private MyPoint getLastPoint(){
+        MyPoint point = null;
+        for (MyPoint p : history){
             if (p==null) break;
             point = p;
         }
@@ -140,8 +141,8 @@ public class View extends JPanel {
 
     public void resetLastPoint(){newRoute = true;}
 
-    public void crtlZ(){
-        crtlZ = true;
+    public void ctrlZ(){
+        ctrlZ = true;
         repaint();
     }
 
@@ -162,30 +163,29 @@ public class View extends JPanel {
         if (effect>nbEffect) effect = 0;
     }
 
-    public void applyEffect(Graphics graphics, Point point){
-        Point last = getLastPoint();
-        if (effect==0) return;
-        switch (effect){
+    public void applyEffect(Graphics graphics, MyPoint point){
+        MyPoint last = getLastPoint();
+        if (point.effect==0) return;
+        switch (point.effect){
             case 1:
                 if (last==null) return;
-                Point direction = new Point();
-                direction.x = (last.x-point.x);
-                direction.y = (last.y-point.y);
-                while (direction.x>1 || direction.y>1) {direction.x/=2; direction.y/=2;}
-                int r = color.getRed();
-                int g = color.getGreen();
-                int b = color.getBlue();
+                double[] d = new double[2];
+                d[0] = (last.x-point.x);
+                d[1] = (last.y-point.y)-1;
+                while (d[0]>1 || d[1]>1) {d[0]/=2; d[1]/=2;}
+                int r = point.color.getRed();
+                int g = point.color.getGreen();
+                int b = point.color.getBlue();
                 Point p1 = new Point();
-                p1.x = point.x;
-                p1.y = point.y;
                 Point p2 = new Point();
                 p2.x = point.x;
                 p2.y = point.y;
-                int n=0;
+                int n=1;
                 while (r>0 || g>0 || b>0){
-                    p1.x += direction.x;
-                    p1.y += direction.y;
-                    graphics.setColor(new Color(r,g,b));
+                    p1.x = (int) (point.x+d[0]*n);
+                    p1.y = (int) (point.y+d[1]*n);
+                    if (ctrlZ) graphics.setColor(Color.BLACK);
+                    else graphics.setColor(new Color(r,g,b));
                     graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
                     p2.x = p1.x;
                     p2.y = p1.y;
