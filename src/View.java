@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class View extends JPanel {
-    private Controller controller;
     private ArrayList<Point> pointsToPaint;
-    private MyPoint[] history;
+    private final MyPoint[] history;
     private boolean newRoute;
-    private ArrayList<Color> colors;
+    private final ArrayList<Color> colors;
     private Color color;
     private int indexColor;
     private static final int nbPas = 255;
@@ -19,11 +18,10 @@ public class View extends JPanel {
     private boolean reset;
     private static final int sizeHistory = 1000;
     private int effect;
-    private final int nbEffect = 1;
     private boolean ctrlZ;
 
     public View() {
-        controller = new Controller(this);
+        Controller controller = new Controller(this);
         pointsToPaint = new ArrayList<>();
         history = new MyPoint[sizeHistory];
         colors = new ArrayList<>(Arrays.asList(
@@ -160,7 +158,8 @@ public class View extends JPanel {
 
     public void effect(){
         effect++;
-        if (effect>nbEffect) effect = 0;
+        int nbEffect = 1;
+        if (effect> nbEffect) effect = 0;
     }
 
     public void applyEffect(Graphics graphics, MyPoint point){
@@ -193,6 +192,8 @@ public class View extends JPanel {
                     if (r<0) r=0; if (g<0) g=0; if (b<0) b=0;
                     n++;
                 }
+            case 2:
+                graphics.setColor(Color.WHITE);
             default:
         }
     }
