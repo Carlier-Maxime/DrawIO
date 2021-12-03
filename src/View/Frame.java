@@ -1,3 +1,7 @@
+package View;
+
+import View.View;
+
 import javax.swing.*;
 import java.awt.*;
 

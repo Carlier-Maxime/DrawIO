@@ -1,3 +1,9 @@
+package View;
+
+import Controller.Controller;
+import Effect.*;
+import Utils.MyPoint;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -68,11 +74,13 @@ public class View extends JPanel {
             for (Point point : pointsToPaint){
                 // paint le point et la ligne si nécessaire
                 g.setColor(color);
-                if (getLastPoint()==null || newRoute) {g.drawOval((int) point.getX(), (int) point.getY(), 1, 1); newRoute = false;}
-                else g.drawLine(getLastPoint().x, getLastPoint().y, point.x, point.y);
-                applyEffect(g, new MyPoint(point.x, point.y, effect, color));
+                if (getLastPoint()==null || newRoute) g.drawOval((int) point.getX(), (int) point.getY(), 1, 1);
+                MyPoint p = new MyPoint(point.x, point.y, color);
+                p.setEffect(getEffect(p));
+                p.effect.apply(g);
                 setLastPoint(point);
                 incrementColor();
+                newRoute = false;
             }
             pointsToPaint = new ArrayList<>();
         }
@@ -82,10 +90,7 @@ public class View extends JPanel {
             if (point==null) return;
             removeLastPoint();
             g.drawOval(point.x, point.y, 1, 1);
-            if (getLastPoint()!=null) {
-                g.drawLine(getLastPoint().x, getLastPoint().y, point.x, point.y);
-            }
-            applyEffect(g, point);
+            point.effect.ctrlZ(g);
             newRoute = true;
             ctrlZ = false;
         }
@@ -93,15 +98,17 @@ public class View extends JPanel {
 
     private void setLastPoint(Point point){
         boolean noSet = true;
+        MyPoint p = new MyPoint(point.x, point.y, color);
+        p.setEffect(getEffect(p));
         for (int i=0; i<history.length; i++){
             if (history[i]==null){
-                history[i] = new MyPoint(point.x, point.y, effect, color);
+                history[i] = p;
                 noSet = false;
             }
         }
         if (noSet){
             if (history.length - 1 >= 0) System.arraycopy(history, 1, history, 0, history.length - 1);
-            history[history.length-1] = new MyPoint(point.x, point.y, effect, color);
+            history[history.length-1] = p;
         }
     }
 
@@ -142,6 +149,7 @@ public class View extends JPanel {
     public void ctrlZ(){
         ctrlZ = true;
         repaint();
+        newRoute = true;
     }
 
     private void removeLastPoint(){
@@ -158,43 +166,24 @@ public class View extends JPanel {
 
     public void effect(){
         effect++;
-        int nbEffect = 1;
+        int nbEffect = 2;
         if (effect> nbEffect) effect = 0;
     }
 
-    public void applyEffect(Graphics graphics, MyPoint point){
-        MyPoint last = getLastPoint();
-        if (point.effect==0) return;
-        switch (point.effect){
+    public Effect getEffect(MyPoint point){
+        switch (effect){
+            case 0:
+                return new EffectLine(this, point, getLastPoint());
             case 1:
-                if (last==null) return;
-                double[] d = new double[2];
-                d[0] = (last.x-point.x);
-                d[1] = (last.y-point.y)-1;
-                while (d[0]>1 || d[1]>1) {d[0]/=2; d[1]/=2;}
-                int r = point.color.getRed();
-                int g = point.color.getGreen();
-                int b = point.color.getBlue();
-                Point p1 = new Point();
-                Point p2 = new Point();
-                p2.x = point.x;
-                p2.y = point.y;
-                int n=1;
-                while (r>0 || g>0 || b>0){
-                    p1.x = (int) (point.x+d[0]*n);
-                    p1.y = (int) (point.y+d[1]*n);
-                    if (ctrlZ) graphics.setColor(Color.BLACK);
-                    else graphics.setColor(new Color(r,g,b));
-                    graphics.drawLine(p1.x, p1.y, p2.x, p2.y);
-                    p2.x = p1.x;
-                    p2.y = p1.y;
-                    r--; g--; b--;
-                    if (r<0) r=0; if (g<0) g=0; if (b<0) b=0;
-                    n++;
-                }
+                return new EffectLaser(this, point, getLastPoint());
             case 2:
-                graphics.setColor(Color.WHITE);
+                return new EffectStar(this, point);
             default:
+                return null;
         }
+    }
+
+    public boolean isNewRoute() {
+        return newRoute;
     }
 }

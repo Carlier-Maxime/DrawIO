@@ -1,3 +1,7 @@
+package Controller;
+
+import View.View;
+
 import java.awt.*;
 import java.awt.event.*;
 
