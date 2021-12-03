@@ -5,14 +5,16 @@ import View.View;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Controller implements KeyListener, MouseMotionListener, MouseListener {
+public class Controller implements KeyListener, MouseMotionListener, MouseListener, MouseWheelListener {
     private final View view;
     private boolean draw;
     private boolean line;
+    private boolean ctrl;
 
     public Controller(View view) {
         this.view = view;
         draw = true;
+        ctrl = false;
     }
 
     @Override
@@ -31,11 +33,12 @@ public class Controller implements KeyListener, MouseMotionListener, MouseListen
             view.resetLastPoint();
         }
         if (e.getKeyCode() == KeyEvent.VK_E) view.effect();
+        if (e.isControlDown()) ctrl=true;
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        if (!e.isControlDown()) ctrl=false;
     }
 
     @Override
@@ -87,5 +90,11 @@ public class Controller implements KeyListener, MouseMotionListener, MouseListen
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (ctrl) view.setBrushSize(view.getBrushSize()+(e.getUnitsToScroll()>0?-1:1));
+        else view.setBrushSize(view.getBrushSize()+e.getUnitsToScroll()*-1);
     }
 }

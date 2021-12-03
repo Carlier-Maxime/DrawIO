@@ -11,9 +11,11 @@ public abstract class Effect {
     protected View view;
     protected boolean ctrlZ;
     protected MyPoint point;
+    protected int brushSize;
 
     public Effect(View view, MyPoint point) {
         this.view = view;
+        this.brushSize = view.getBrushSize();
         this.point = point;
         ctrlZ = false;
     }

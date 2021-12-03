@@ -6,15 +6,20 @@ import View.View;
 import java.awt.*;
 
 public class EffectLaser extends Effect{
+    private final EffectLine effectLine;
     private final MyPoint last;
+
     public EffectLaser(View view, MyPoint point, MyPoint last) {
         super(view, point);
         this.last = last;
+        this.effectLine = new EffectLine(view,point,last);
     }
 
     @Override
     public void apply(Graphics graphics) {
         if (last==null || (view.isNewRoute() && !ctrlZ)) return;
+        if (!ctrlZ) effectLine.apply(graphics);
+        else effectLine.ctrlZ(graphics);
         double[] d = new double[2];
         d[0] = (last.x-point.x);
         d[1] = (last.y-point.y)-1;

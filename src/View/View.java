@@ -25,6 +25,7 @@ public class View extends JPanel {
     private static final int sizeHistory = 1000;
     private int effect;
     private boolean ctrlZ;
+    private int brushSize;
 
     public View() {
         Controller controller = new Controller(this);
@@ -49,10 +50,12 @@ public class View extends JPanel {
         newRoute = true;
         effect = 0;
         ctrlZ = false;
+        brushSize = 1;
 
         addKeyListener(controller);
         addMouseMotionListener(controller);
         addMouseListener(controller);
+        addMouseWheelListener(controller);
         requestFocus();
     }
 
@@ -78,7 +81,7 @@ public class View extends JPanel {
                 MyPoint p = new MyPoint(point.x, point.y, color);
                 p.setEffect(getEffect(p));
                 p.effect.apply(g);
-                setLastPoint(point);
+                setLastPoint(p);
                 incrementColor();
                 newRoute = false;
             }
@@ -96,19 +99,17 @@ public class View extends JPanel {
         }
     }
 
-    private void setLastPoint(Point point){
+    private void setLastPoint(MyPoint point){
         boolean noSet = true;
-        MyPoint p = new MyPoint(point.x, point.y, color);
-        p.setEffect(getEffect(p));
         for (int i=0; i<history.length; i++){
             if (history[i]==null){
-                history[i] = p;
+                history[i] = point;
                 noSet = false;
             }
         }
         if (noSet){
             if (history.length - 1 >= 0) System.arraycopy(history, 1, history, 0, history.length - 1);
-            history[history.length-1] = p;
+            history[history.length-1] = point;
         }
     }
 
@@ -185,5 +186,14 @@ public class View extends JPanel {
 
     public boolean isNewRoute() {
         return newRoute;
+    }
+
+    public int getBrushSize() {
+        return brushSize;
+    }
+
+    public void setBrushSize(int brushSize) {
+        if (brushSize <= 0) this.brushSize = 1;
+        else this.brushSize = brushSize;
     }
 }

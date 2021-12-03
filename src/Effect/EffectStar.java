@@ -4,16 +4,17 @@ import Utils.MyPoint;
 import View.View;
 
 import java.awt.*;
-import java.util.Arrays;
 
 public class EffectStar extends Effect{
-    private static final int ecartMax = 32;
-    private static final int nbEtoile = 32;
+    private int ecartMax;
+    private int nbEtoile;
 
     private Point[] stars;
 
     public EffectStar(View view, MyPoint point) {
         super(view, point);
+        ecartMax = view.getBrushSize();
+        nbEtoile = view.getBrushSize();
         stars = new Point[nbEtoile];
     }
 
@@ -22,6 +23,11 @@ public class EffectStar extends Effect{
         int r = point.color.getRed();
         int g = point.color.getGreen();
         int b = point.color.getBlue();
+        if (!ctrlZ) {
+            ecartMax = view.getBrushSize();
+            nbEtoile = view.getBrushSize();
+            stars = new Point[nbEtoile];
+        }
         for (int i=0; i<nbEtoile; i++){
             if (!ctrlZ) {
                 int ecartX = rng.nextInt((ecartMax - ecartMax*-1) + 1) + ecartMax*-1;
@@ -33,6 +39,5 @@ public class EffectStar extends Effect{
             if (stars[i]==null) break;
             graphics.drawOval(stars[i].x,stars[i].y,1,1);
         }
-        System.out.println(Arrays.toString(stars));
     }
 }
