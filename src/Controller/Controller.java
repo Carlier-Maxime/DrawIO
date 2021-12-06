@@ -10,11 +10,13 @@ public class Controller implements KeyListener, MouseMotionListener, MouseListen
     private boolean draw;
     private boolean line;
     private boolean ctrl;
+    private boolean shift;
 
     public Controller(View view) {
         this.view = view;
         draw = true;
         ctrl = false;
+        shift = false;
     }
 
     @Override
@@ -34,11 +36,13 @@ public class Controller implements KeyListener, MouseMotionListener, MouseListen
         }
         if (e.getKeyCode() == KeyEvent.VK_E) view.effect();
         if (e.isControlDown()) ctrl=true;
+        if (e.isShiftDown()) shift = true;
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         if (!e.isControlDown()) ctrl=false;
+        if (!e.isShiftDown()) shift = false;
     }
 
     @Override
@@ -95,6 +99,7 @@ public class Controller implements KeyListener, MouseMotionListener, MouseListen
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         if (ctrl) view.setBrushSize(view.getBrushSize()+(e.getUnitsToScroll()>0?-1:1));
+        else if (shift) view.setBrushSize(view.getBrushSize()+(e.getUnitsToScroll()>0?-10:10));
         else view.setBrushSize(view.getBrushSize()+e.getUnitsToScroll()*-1);
     }
 }

@@ -167,7 +167,7 @@ public class View extends JPanel {
 
     public void effect(){
         effect++;
-        int nbEffect = 2;
+        int nbEffect = 5;
         if (effect> nbEffect) effect = 0;
     }
 
@@ -179,6 +179,12 @@ public class View extends JPanel {
                 return new EffectLaser(this, point, getLastPoint());
             case 2:
                 return new EffectStar(this, point);
+            case 3:
+                return new EffectOval(this, point);
+            case 4:
+                return new EffectBubble(this, point);
+            case 5:
+                return new EffectTemplate(this, point);
             default:
                 return null;
         }
