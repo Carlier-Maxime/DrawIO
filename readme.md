@@ -1,11 +1,11 @@
-#DrawIO
-##DrawIO est une petite application java
+# DrawIO
+## DrawIO est une petite application java
 Elle permet  de dessiner a la souris avec plusieur effet possible.<br>
 On peut aussi revenir en arrière avec ctrl+Z.<br>
 effacer le tout ou commencer un nouveau tracer.<br>
 Et changer l'epaisseur du trait.<br>
 En bonus le trait varie de couleur.<br>
-##Control
+## Control
 * Dessiner : Move mouse
 * Effacer tout : R
 * Interompre le tracer : D
@@ -15,7 +15,7 @@ En bonus le trait varie de couleur.<br>
 * Commencer une nouvelle ligne : left click
 * Revenir en arrière : Ctrl+Z
 * Changer l'épaisseur du trait : Wheel Mouse (+ Ctrl pour plus de precision ou Shift pour moins)
-##Effet
+## Effet
 * Line : Dessine une ligne a main levée suivant la souris.
 * Laser : Crée des trait qui s'atténue a plus ou moins 45° du trait de base.
 * Star : Place N point de brillance alèatoire avec un ecartMax de N par rapport a la souris. (N = epaisseur du trait)
